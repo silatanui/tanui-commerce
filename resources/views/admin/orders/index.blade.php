@@ -1,20 +1,35 @@
 @extends('layouts.admin')
+@section('title', 'Orders')
 @section('content')
-<h1 class="h3">Demonstration orders</h1>
-<form class="row g-2 mb-3">
-    <div class="col-md-6"><input class="form-control" name="q" value="{{ $search }}" placeholder="Order number or customer"></div>
-    <div class="col-md-4"><select class="form-select" name="status"><option value="">All statuses</option>@foreach ($statuses as $value => $label)<option value="{{ $value }}" @selected($status === $value)>{{ $label }}</option>@endforeach</select></div>
-    <div class="col-md-2"><button class="btn btn-dark">Filter</button></div>
-</form>
-<table class="table"><thead><tr><th>Order</th><th>Customer</th><th>Status</th><th>Sample total</th></tr></thead><tbody>
-@foreach ($orders as $order)
-<tr>
-    <td><a href="{{ route('admin.orders.show', $order) }}">{{ $order->order_number }}</a></td>
-    <td>{{ $order->customer_details['full_name'] ?? 'Guest' }}</td>
-    <td>{{ ucfirst($order->status) }}</td>
-    <td>{{ money($order->total, $order->currency) }}</td>
-</tr>
-@endforeach
-</tbody></table>
-{{ $orders->links() }}
+<div class="page-head">
+    <h1>Demonstration orders</h1>
+</div>
+<div class="admin-table-wrap">
+    <table class="table table-hover admin-datatable table-sm align-middle">
+        <thead>
+            <tr>
+                <th>Order</th>
+                <th>Customer</th>
+                <th>Status</th>
+                <th>Sample total</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($orders as $order)
+                <tr>
+                    <td><strong>{{ $order->order_number }}</strong></td>
+                    <td>{{ $order->customer_details['full_name'] ?? 'Guest' }}</td>
+                    <td><span class="status-pill is-{{ $order->status }}">{{ $order->status }}</span></td>
+                    <td>{{ money($order->total, $order->currency) }}</td>
+                    <td class="text-end">
+                        <div class="table-actions">
+                            <a class="btn-table btn-table-primary" href="{{ route('admin.orders.show', $order) }}">View</a>
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
 @endsection

@@ -19,8 +19,7 @@ class ReviewController extends Controller
             ->with(['product', 'user'])
             ->when($status !== '', fn ($query) => $query->where('status', $status))
             ->latest()
-            ->paginate(15)
-            ->withQueryString();
+            ->get();
 
         return view('admin.reviews.index', compact('reviews', 'status'));
     }

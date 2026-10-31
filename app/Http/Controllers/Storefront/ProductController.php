@@ -16,6 +16,7 @@ class ProductController extends Controller
             ->forStore($storeModel)
             ->published()
             ->where('slug', $product)
+            ->withRatings()
             ->with([
                 'brand',
                 'category.parent',
@@ -28,6 +29,7 @@ class ProductController extends Controller
         $related = Product::query()
             ->forStore($storeModel)
             ->published()
+            ->withRatings()
             ->where('category_id', $record->category_id)
             ->whereKeyNot($record->id)
             ->with(['brand', 'images', 'variants'])

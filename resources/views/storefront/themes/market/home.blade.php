@@ -11,7 +11,12 @@
                         <p class="eyebrow">Fresh picks</p>
                         <h1>{{ $heroBanner?->title ?? $store->name }}</h1>
                         <p>{{ $heroBanner?->subtitle }}</p>
-                        <a class="btn btn-light mt-3" href="{{ route('store.shop', $store->slug) }}">Shop the aisle</a>
+                        <div class="hero-store__actions mt-3">
+                            <a class="btn btn-light" href="{{ route('store.shop', $store->slug) }}">Shop the aisle</a>
+                            @if (config('ai.enabled'))
+                                <button type="button" class="btn btn-outline-light" data-open-assistant>Ask the store</button>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -40,7 +45,14 @@
             <p class="mb-0">{{ $promoBanner?->subtitle ?? 'Sale badges use a compare-at sample price. Discount codes are validated on the server.' }}</p>
         </div>
         @include('storefront.partials.grid', ['items' => $offers->isNotEmpty() ? $offers : $featured])
-        <div class="section-head mt-5">
+    </div>
+</section>
+
+@include('storefront.partials.lookbook-spotlight', ['look' => $lookSpotlight ?? null])
+
+<section class="section pt-0">
+    <div class="container">
+        <div class="section-head">
             <div>
                 <h2>Shop the aisle</h2>
                 <p>Everyday demonstration groceries and household items.</p>

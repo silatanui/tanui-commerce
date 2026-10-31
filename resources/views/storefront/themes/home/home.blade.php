@@ -11,7 +11,12 @@
                         <p class="eyebrow">Living spaces</p>
                         <h1>{{ $heroBanner?->title ?? 'Rooms, composed' }}</h1>
                         <p>{{ $heroBanner?->subtitle ?? $store->setting('tagline') }}</p>
-                        <a class="btn btn-light mt-3" href="{{ route('store.shop', $store->slug) }}">View the collection</a>
+                        <div class="hero-store__actions mt-3">
+                            <a class="btn btn-light" href="{{ route('store.shop', $store->slug) }}">View the collection</a>
+                            @if (config('ai.enabled'))
+                                <button type="button" class="btn btn-outline-light" data-open-assistant>Ask the store</button>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -56,7 +61,14 @@
             </div>
         </div>
         @include('storefront.partials.grid', ['items' => $featured->skip(1)])
-        <div class="promo-band mt-5 {{ $promoBanner?->imageUrl() ? 'has-image' : '' }}" @if ($promoBanner?->imageUrl()) style="background-image:url('{{ $promoBanner?->imageUrl() }}')" @endif>
+    </div>
+</section>
+
+@include('storefront.partials.lookbook-spotlight', ['look' => $lookSpotlight ?? null])
+
+<section class="section pt-0">
+    <div class="container">
+        <div class="promo-band {{ $promoBanner?->imageUrl() ? 'has-image' : '' }}" @if ($promoBanner?->imageUrl()) style="background-image:url('{{ $promoBanner?->imageUrl() }}')" @endif>
             <h2>{{ $promoBanner?->title ?? 'Delivery information' }}</h2>
             <p class="mb-0">{{ $promoBanner?->subtitle }}</p>
         </div>

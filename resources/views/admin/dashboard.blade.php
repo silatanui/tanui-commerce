@@ -5,7 +5,7 @@
     $currency = $adminStore->currency;
     $changeClass = fn (float $value) => $value >= 0 ? 'delta-up' : 'delta-down';
     $changeText = fn (float $value, string $suffix) => ($value >= 0 ? '+' : '').$value.'% '.$suffix;
-    $channelColors = ['#3d6ef5', '#22c55e', '#f59e0b'];
+    $channelColors = ['#1a1a1a', '#5a5a5a', '#9a9a9a', '#c8c8c8']; // JS overrides for dark theme
 @endphp
 
 <div class="dash-grid">
@@ -177,7 +177,7 @@
                 @foreach ($report['channels'] as $index => $channel)
                     <div class="visitor-bar-row">
                         <span>{{ $channel['name'] }}</span>
-                        <div class="visitor-track"><div class="visitor-fill" style="width: {{ min(100, ($channel['share'] / $channelMax) * 100) }}%; background: {{ $channelColors[$index] ?? '#3d6ef5' }}"></div></div>
+                        <div class="visitor-track"><div class="visitor-fill" style="width: {{ min(100, ($channel['share'] / $channelMax) * 100) }}%; background: {{ $channelColors[$index] ?? '#5a5a5a' }}"></div></div>
                         <strong>{{ $channel['share'] }}%</strong>
                     </div>
                 @endforeach
@@ -193,9 +193,9 @@
                         @php
                             $value = $report['heatmap']['cells'][$day][$hour] ?? 0;
                             $intensity = $value / max(1, $report['heatmap']['max']);
-                            $alpha = 0.12 + ($intensity * 0.78);
+                            $alpha = 0.1 + ($intensity * 0.82);
                         @endphp
-                        <span class="heat-cell" style="background: rgba(61, 110, 245, {{ $alpha }})" title="{{ $day }} {{ $hour }}: {{ $value }}"></span>
+                        <span class="heat-cell" style="background: rgba(26, 26, 26, {{ $alpha }})" title="{{ $day }} {{ $hour }}: {{ $value }}"></span>
                     @endforeach
                 @endforeach
             </div>
@@ -207,10 +207,15 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
 <script>
+const isDark = document.documentElement.classList.contains('admin-theme-dark')
+    || document.documentElement.getAttribute('data-theme') === 'dark';
+const palette = isDark
+    ? { ink: '#f2f2f2', soft: '#9a9a9a', fill: 'rgba(242,242,242,0.12)', grid: '#333', bars: ['#f2f2f2', '#c8c8c8', '#9a9a9a'], channels: ['#f2f2f2', '#b0b0b0', '#6b6b6b'] }
+    : { ink: '#1a1a1a', soft: '#6b6b6b', fill: 'rgba(26,26,26,0.1)', grid: '#e6e6e6', bars: ['#1a1a1a', '#5a5a5a', '#9a9a9a'], channels: ['#1a1a1a', '#5a5a5a', '#9a9a9a'] };
+
 const trend = @json($report['trend']);
 const channels = @json($report['channels']);
 const topProducts = @json($report['top_products']);
-const channelColors = @json($channelColors);
 
 new Chart(document.getElementById('channelChart'), {
     type: 'doughnut',
@@ -218,7 +223,7 @@ new Chart(document.getElementById('channelChart'), {
         labels: channels.map((row) => row.name),
         datasets: [{
             data: channels.map((row) => row.units || row.share),
-            backgroundColor: channelColors,
+            backgroundColor: palette.channels,
             borderWidth: 0,
             circumference: 180,
             rotation: 270,
@@ -239,17 +244,17 @@ new Chart(document.getElementById('salesChart'), {
             {
                 label: 'Revenue',
                 data: trend.map((row) => row.sales),
-                borderColor: '#3d6ef5',
-                backgroundColor: 'rgba(61, 110, 245, 0.12)',
+                borderColor: palette.ink,
+                backgroundColor: palette.fill,
                 fill: true,
                 tension: 0.35,
-                pointRadius: 0,
+                pointRadius: 2,
                 borderWidth: 2.5
             },
             {
                 label: 'Target',
                 data: trend.map((row) => row.target),
-                borderColor: '#c7d2fe',
+                borderColor: palette.soft,
                 borderDash: [6, 6],
                 fill: false,
                 tension: 0.35,
@@ -261,8 +266,8 @@ new Chart(document.getElementById('salesChart'), {
     options: {
         plugins: { legend: { display: false } },
         scales: {
-            x: { grid: { display: false }, ticks: { color: '#8b95a7', maxTicksLimit: 8 } },
-            y: { grid: { color: '#eef2f7' }, ticks: { color: '#8b95a7' }, beginAtZero: true }
+            x: { grid: { display: false }, ticks: { color: palette.soft, maxTicksLimit: 8 } },
+            y: { grid: { color: palette.grid }, ticks: { color: palette.soft }, beginAtZero: true }
         }
     }
 });
@@ -273,8 +278,8 @@ new Chart(document.getElementById('topProductsChart'), {
         labels: topProducts.map((row) => row.product_name),
         datasets: [{
             data: topProducts.map((row) => Number(row.units)),
-            backgroundColor: ['#3d6ef5', '#93c5fd', '#dbeafe'],
-            borderRadius: 10,
+            backgroundColor: palette.bars,
+            borderRadius: 0,
             barThickness: 28
         }]
     },
@@ -282,10 +287,11 @@ new Chart(document.getElementById('topProductsChart'), {
         indexAxis: 'y',
         plugins: { legend: { display: false } },
         scales: {
-            x: { grid: { color: '#eef2f7' }, ticks: { precision: 0 } },
-            y: { grid: { display: false } }
+            x: { grid: { color: palette.grid }, ticks: { precision: 0, color: palette.soft } },
+            y: { grid: { display: false }, ticks: { color: palette.soft } }
         }
     }
 });
 </script>
 @endpush
+

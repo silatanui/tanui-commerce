@@ -23,8 +23,7 @@ class CustomerController extends Controller
             })
             ->withCount(['orders' => fn ($query) => $query->where('store_id', $store->id)])
             ->orderBy('name')
-            ->paginate(15)
-            ->withQueryString();
+            ->get();
 
         return view('admin.customers.index', compact('customers', 'search'));
     }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\StoreBanner;
+use App\Support\StoreLookbook;
 use App\Support\StorePromos;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -19,6 +20,7 @@ class HomeController extends Controller
         $products = Product::query()
             ->forStore($store)
             ->published()
+            ->withRatings()
             ->with(['brand', 'images', 'category', 'variants']);
 
         $bestsellerIds = OrderItem::query()
@@ -32,11 +34,15 @@ class HomeController extends Controller
 
         $bestsellers = $bestsellerIds->isEmpty()
             ? (clone $products)->where('is_featured', true)->limit(8)->get()
-            : Product::query()->forStore($store)->published()->with(['brand', 'images', 'category', 'variants'])->whereIn('id', $bestsellerIds)->get()
+            : Product::query()->forStore($store)->published()->withRatings()->with(['brand', 'images', 'category', 'variants'])->whereIn('id', $bestsellerIds)->get()
                 ->sortBy(fn ($product) => $bestsellerIds->search($product->id))
                 ->values();
 
         $promos = StorePromos::forStore($store);
+        $lookbook = StoreLookbook::forStore($store);
+        $lookSpotlight = collect($lookbook['looks'] ?? [])->first(
+            fn (array $look) => ($look['layout'] ?? '') === 'split' && count($look['products'] ?? []) >= 2
+        ) ?? ($lookbook['looks'][1] ?? null);
 
         return view('storefront.home', [
             'banners' => StoreBanner::query()
@@ -50,6 +56,7 @@ class HomeController extends Controller
             'offers' => (clone $products)->whereNotNull('compare_at_price')->limit(4)->get(),
             'widePromos' => $promos['wide'],
             'stackPromos' => $promos['stack'],
+            'lookSpotlight' => $lookSpotlight,
         ]);
     }
 }

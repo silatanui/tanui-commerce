@@ -17,7 +17,7 @@ class InventoryController extends Controller
         $search = $request->string('q')->toString();
 
         $variants = ProductVariant::query()
-            ->with('product')
+            ->with(['product.images'])
             ->whereHas('product', function ($query) use ($store, $search) {
                 $query->where('store_id', $store->id);
                 if ($search !== '') {
@@ -27,8 +27,7 @@ class InventoryController extends Controller
                 }
             })
             ->orderBy('stock_quantity')
-            ->paginate(20)
-            ->withQueryString();
+            ->get();
 
         $movements = InventoryMovement::query()
             ->where('store_id', $store->id)

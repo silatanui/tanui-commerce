@@ -13,7 +13,15 @@ class AiChatSession extends Model
         'session_token',
         'user_id',
         'ip_address',
+        'context',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'context' => 'array',
+        ];
+    }
 
     public function store(): BelongsTo
     {

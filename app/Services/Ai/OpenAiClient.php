@@ -29,12 +29,16 @@ class OpenAiClient
         return $vector;
     }
 
-    public function chat(array $messages): string
+    /**
+     * @param  list<array{role: string, content: string}>  $messages
+     * @param  array{temperature?: float, max_tokens?: int, model?: string}  $options
+     */
+    public function chat(array $messages, array $options = []): string
     {
         $response = $this->client()->post('/chat/completions', [
-            'model' => config('ai.openai.chat_model'),
-            'temperature' => config('ai.openai.temperature'),
-            'max_tokens' => config('ai.openai.max_tokens'),
+            'model' => $options['model'] ?? config('ai.openai.chat_model'),
+            'temperature' => $options['temperature'] ?? config('ai.openai.temperature'),
+            'max_tokens' => $options['max_tokens'] ?? config('ai.openai.max_tokens'),
             'messages' => $messages,
         ])->throw()->json();
 

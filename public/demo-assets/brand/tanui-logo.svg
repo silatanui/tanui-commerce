@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 56" role="img" aria-label="Tanui Commerce">
+  <rect x="0" y="4" width="48" height="48" fill="#0B1F3A"/>
+  <g fill="none" stroke="#C4A35A" stroke-width="3.6" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M12 16 H36"/>
+    <path d="M24 16 V40"/>
+    <path d="M30 24 H36 V34 H30"/>
+  </g>
+  <text x="62" y="36" fill="#F6F3EE" font-family="Outfit, Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="-0.8">Tanui</text>
+  <text x="142" y="36" fill="#C4A35A" font-family="Outfit, Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="-0.8">Commerce</text>
+</svg>

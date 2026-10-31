@@ -54,6 +54,11 @@ class Store extends Model
         return $this->hasMany(Order::class);
     }
 
+    public function blogPosts(): HasMany
+    {
+        return $this->hasMany(BlogPost::class);
+    }
+
     public function setting(string $key, mixed $default = null): mixed
     {
         $settings = $this->relationLoaded('settings') ? $this->settings : $this->settings()->get();
@@ -82,5 +87,10 @@ class Store extends Model
     public function logoUrl(): string
     {
         return $this->logo ? asset($this->logo) : asset('demo-assets/stores/'.$this->slug.'.svg');
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 }

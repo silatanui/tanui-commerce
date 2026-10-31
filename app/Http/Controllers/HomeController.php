@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Store;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -10,7 +11,7 @@ class HomeController extends Controller
 {
     public function index(): View
     {
-        return view('pages.home', [
+        return view('pages.projects', [
             'stores' => Store::query()->where('status', 'active')->with('settings')->orderBy('id')->get(),
         ]);
     }
@@ -20,11 +21,9 @@ class HomeController extends Controller
         return view('pages.about');
     }
 
-    public function projects(): View
+    public function projects(): RedirectResponse
     {
-        return view('pages.projects', [
-            'stores' => Store::query()->where('status', 'active')->with('settings')->orderBy('id')->get(),
-        ]);
+        return redirect()->route('home');
     }
 
     public function contact(): View

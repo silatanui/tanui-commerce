@@ -74,6 +74,13 @@ class Product extends Model
         return $query->where('status', 'published');
     }
 
+    public function scopeWithRatings(Builder $query): Builder
+    {
+        return $query
+            ->withAvg(['reviews as approved_rating_avg' => fn ($builder) => $builder->where('status', 'approved')], 'rating')
+            ->withCount(['reviews as approved_reviews_count' => fn ($builder) => $builder->where('status', 'approved')]);
+    }
+
     public function scopeForStore(Builder $query, Store|int $store): Builder
     {
         $id = $store instanceof Store ? $store->id : $store;
@@ -127,6 +134,10 @@ class Product extends Model
 
     public function averageRating(): ?float
     {
+        if (array_key_exists('approved_rating_avg', $this->attributes) && $this->approved_rating_avg !== null) {
+            return round((float) $this->approved_rating_avg, 1);
+        }
+
         $ratings = $this->relationLoaded('reviews')
             ? $this->reviews->where('status', 'approved')->pluck('rating')
             : $this->reviews()->where('status', 'approved')->pluck('rating');
@@ -136,5 +147,18 @@ class Product extends Model
         }
 
         return round($ratings->avg(), 1);
+    }
+
+    public function approvedReviewsCount(): int
+    {
+        if (array_key_exists('approved_reviews_count', $this->attributes)) {
+            return (int) $this->approved_reviews_count;
+        }
+
+        if ($this->relationLoaded('reviews')) {
+            return $this->reviews->where('status', 'approved')->count();
+        }
+
+        return (int) $this->reviews()->where('status', 'approved')->count();
     }
 }

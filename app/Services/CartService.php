@@ -136,6 +136,46 @@ class CartService
         ];
     }
 
+    /**
+     * JSON payload for the storefront cart drawer / AJAX responses.
+     *
+     * @return array<string, mixed>
+     */
+    public function summaryPayload(Store $store): array
+    {
+        $quote = $this->quote($store);
+        $cart = $quote['cart'];
+
+        $lines = $cart->items->map(function ($item) use ($store) {
+            $product = $item->product;
+
+            return [
+                'item_id' => $item->id,
+                'product_id' => $item->product_id,
+                'variant_id' => $item->variant_id,
+                'name' => $product?->name ?? 'Item',
+                'url' => $product ? route('store.product', [$store->slug, $product->slug]) : null,
+                'quantity' => (int) $item->quantity,
+                'unit_label' => money($item->unit_price, $store->currency),
+                'line_label' => money((float) $item->unit_price * $item->quantity, $store->currency),
+                'image' => $product?->primaryImageUrl(),
+                'max' => min(20, max(1, (int) ($item->variant?->stock_quantity ?? 20))),
+            ];
+        })->values()->all();
+
+        return [
+            'ok' => true,
+            'count' => (int) $cart->items->sum('quantity'),
+            'subtotal_label' => money($quote['subtotal'], $store->currency),
+            'discount' => $quote['discount'],
+            'discount_label' => money($quote['discount'], $store->currency),
+            'coupon' => $quote['coupon']?->code,
+            'lines' => $lines,
+            'cart_url' => route('store.cart', $store->slug),
+            'checkout_url' => route('store.checkout', $store->slug),
+        ];
+    }
+
     public function couponFromSession(Store $store, float $subtotal): ?Coupon
     {
         $code = session('coupon.'.$store->id);

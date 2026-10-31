@@ -26,6 +26,6 @@ class DemoResetController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('admin.login')->with('status', 'Demonstration data was restored. Sign in again with the original administrator account.');
+        return redirect()->route('admin.dashboard')->with('status', 'Demonstration data was restored. The demonstration administrator session will reopen automatically.');
     }
 }

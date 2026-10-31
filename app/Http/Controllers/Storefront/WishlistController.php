@@ -16,8 +16,12 @@ class WishlistController extends Controller
     {
         $items = Wishlist::query()
             ->where('user_id', auth()->id())
-            ->whereHas('product', fn ($query) => $query->forStore(current_store()))
-            ->with(['product.images', 'product.brand', 'product.variants'])
+            ->whereHas('product', fn ($query) => $query->forStore(current_store())->published())
+            ->with([
+                'product' => fn ($query) => $query
+                    ->withRatings()
+                    ->with(['images', 'brand', 'variants', 'category']),
+            ])
             ->latest()
             ->get();
 

@@ -1,14 +1,17 @@
 <?php
 
 use App\Http\Controllers\Storefront\AccountController;
+use App\Http\Controllers\Storefront\BlogController;
 use App\Http\Controllers\Storefront\CartController;
 use App\Http\Controllers\Storefront\CatalogController;
 use App\Http\Controllers\Storefront\ChatController;
 use App\Http\Controllers\Storefront\CheckoutController;
 use App\Http\Controllers\Storefront\ComingSoonController;
 use App\Http\Controllers\Storefront\CompareController;
+use App\Http\Controllers\Storefront\ContentPageController;
 use App\Http\Controllers\Storefront\CustomerAuthController;
 use App\Http\Controllers\Storefront\HomeController;
+use App\Http\Controllers\Storefront\LookbookController;
 use App\Http\Controllers\Storefront\NewsletterController;
 use App\Http\Controllers\Storefront\OrderController;
 use App\Http\Controllers\Storefront\ProductController;
@@ -21,15 +24,28 @@ Route::prefix('store/{store}')
     ->group(function () {
         Route::get('/', [HomeController::class, 'index'])->name('store.home');
         Route::get('/shop', [CatalogController::class, 'index'])->name('store.shop');
+        Route::get('/new-arrivals', [CatalogController::class, 'arrivals'])->name('store.arrivals');
+        Route::get('/deals', [CatalogController::class, 'deals'])->name('store.deals');
+        Route::get('/best-sellers', [CatalogController::class, 'bestsellers'])->name('store.bestsellers');
+        Route::get('/lookbook', [LookbookController::class, 'show'])->name('store.lookbook');
         Route::get('/category/{category}', [CatalogController::class, 'category'])->name('store.category');
         Route::get('/product/{product}', [ProductController::class, 'show'])->name('store.product');
         Route::get('/search', [CatalogController::class, 'search'])->name('store.search');
+        Route::get('/search/suggest', [CatalogController::class, 'suggest'])->name('store.search.suggest');
+        Route::get('/news', [BlogController::class, 'index'])->name('store.blog');
+        Route::get('/news/{post}', [BlogController::class, 'show'])->name('store.blog.show');
+        Route::get('/help/faq', [ContentPageController::class, 'faq'])->name('store.faq');
+        Route::get('/help/shipping', [ContentPageController::class, 'shipping'])->name('store.shipping');
+        Route::get('/help/returns', [ContentPageController::class, 'returns'])->name('store.returns');
+        Route::get('/gift-cards', [ContentPageController::class, 'giftCards'])->name('store.gift-cards');
+        Route::post('/gift-cards/preview', [ContentPageController::class, 'giftCardsPreview'])->middleware('throttle:20,1')->name('store.gift-cards.preview');
         Route::get('/coming-soon/{feature}', [ComingSoonController::class, 'show'])->name('store.coming-soon');
         Route::post('/newsletter', [NewsletterController::class, 'store'])->name('store.newsletter');
         Route::post('/ai/chat', [ChatController::class, 'store'])->middleware('throttle:ai-chat')->name('store.ai.chat');
         Route::post('/ai/conversations', [ChatController::class, 'conversations'])->middleware('throttle:ai-chat')->name('store.ai.conversations');
         Route::get('/ai/conversations/{token}', [ChatController::class, 'messages'])->middleware('throttle:ai-chat')->name('store.ai.messages');
         Route::post('/ai/cart', [ChatController::class, 'addToCart'])->middleware('throttle:ai-chat')->name('store.ai.cart');
+        Route::post('/ai/commerce', [ChatController::class, 'commerce'])->middleware('throttle:ai-chat')->name('store.ai.commerce');
 
         Route::get('/cart', [CartController::class, 'index'])->name('store.cart');
         Route::post('/cart', [CartController::class, 'store'])->name('store.cart.add');

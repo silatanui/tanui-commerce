@@ -120,17 +120,96 @@ class CommercePlatformTest extends TestCase
         $this->assertDatabaseCount('orders', 0);
     }
 
-    public function test_administration_requires_an_active_administrator(): void
+    public function test_administration_opens_without_a_login_screen_for_guests(): void
     {
         $this->catalogue('fashion', 'Admin Catalogue Piece');
+        User::factory()->create(['role' => 'admin', 'status' => 'active']);
 
-        $this->get('/admin')->assertRedirect(route('admin.login'));
+        $this->get('/admin')->assertOk()->assertSee('Simulated');
+        $this->get(route('admin.login'))->assertRedirect(route('admin.dashboard'));
 
         $customer = User::factory()->create(['role' => 'customer', 'status' => 'active']);
         $this->actingAs($customer)->get('/admin')->assertForbidden();
 
-        $admin = User::factory()->create(['role' => 'admin', 'status' => 'active']);
+        $admin = User::factory()->create(['role' => 'admin', 'status' => 'active', 'email' => 'second-admin@example.test']);
         $this->actingAs($admin)->get(route('admin.dashboard'))->assertOk()->assertSee('Simulated');
+    }
+
+    public function test_store_assistant_can_complete_demo_purchase_and_track_order(): void
+    {
+        $catalogue = $this->catalogue('fashion', 'Chat Flow Coat');
+        $product = $catalogue['product'];
+        $variant = $catalogue['variant'];
+        $customer = User::factory()->create(['role' => 'customer', 'status' => 'active']);
+
+        $buy = $this->actingAs($customer)->postJson(route('store.ai.commerce', 'fashion'), [
+            'action' => 'buy_now',
+            'product_id' => $product->id,
+            'variant_id' => $variant->id,
+            'quantity' => 1,
+        ])->assertOk()->assertJsonPath('ui.step', 'checkout');
+
+        $token = $buy->json('session_token');
+        $this->assertNotEmpty($token);
+
+        $this->actingAs($customer)->postJson(route('store.ai.commerce', 'fashion'), [
+            'action' => 'checkout.save',
+            'session_token' => $token,
+            'draft' => [
+                'full_name' => 'Chat Shopper',
+                'email' => 'chat@example.test',
+                'phone' => '+254700000099',
+                'address_line' => '9 Assistant Way',
+                'city' => 'Nairobi',
+                'postal_code' => '00100',
+                'country' => 'Kenya',
+                'shipping_method' => 'pickup',
+            ],
+        ])->assertOk()->assertJsonPath('ui.step', 'payment');
+
+        $confirmed = $this->actingAs($customer)->postJson(route('store.ai.commerce', 'fashion'), [
+            'action' => 'checkout.confirm',
+            'session_token' => $token,
+        ])->assertOk()->assertJsonPath('ui.step', 'order');
+
+        $orderNumber = $confirmed->json('order.order_number');
+        $this->assertNotEmpty($orderNumber);
+
+        $order = Order::query()->where('order_number', $orderNumber)->first();
+        $this->assertNotNull($order);
+        $this->assertTrue($order->is_demo);
+        $this->assertSame('not_processed', $order->payment_status);
+        $this->assertSame($customer->id, $order->user_id);
+
+        $this->actingAs($customer)->postJson(route('store.ai.commerce', 'fashion'), [
+            'action' => 'order.track',
+            'session_token' => $token,
+            'order_number' => $orderNumber,
+        ])->assertOk()->assertJsonPath('ui.step', 'delivery');
+
+        $this->actingAs($customer)->postJson(route('store.ai.commerce', 'fashion'), [
+            'action' => 'checkout.save',
+            'session_token' => $token,
+            'draft' => [
+                'full_name' => 'Bad Card',
+                'email' => 'bad@example.test',
+                'phone' => '+254700000098',
+                'address_line' => '1 Fail Road',
+                'city' => 'Nairobi',
+                'country' => 'Kenya',
+                'shipping_method' => 'pickup',
+                'card_number' => '4242424242424242',
+            ],
+        ])->assertStatus(422);
+    }
+
+    public function test_store_assistant_chat_intent_opens_cart_ui(): void
+    {
+        $this->catalogue('fashion', 'Intent Coat');
+
+        $this->postJson(route('store.ai.chat', 'fashion'), [
+            'message' => 'View cart please',
+        ])->assertOk()->assertJsonPath('ui.step', 'cart');
     }
 
     private function carrySession($response): static

@@ -26,7 +26,7 @@ class CheckoutService
         $blocked = ['card_number', 'card', 'cvv', 'cvc', 'pan', 'payment_token', 'payment_method'];
 
         foreach ($blocked as $field) {
-            if (request()->filled($field)) {
+            if (request()->filled($field) || array_key_exists($field, $data)) {
                 throw ValidationException::withMessages([
                     'payment' => 'Payment cards are not accepted on this demonstration.',
                 ]);

@@ -29,10 +29,20 @@
                 <p>{{ $product->short_description }}</p>
                 <x-price :amount="$product->price" :compare="$product->compare_at_price" :currency="$store->currency" />
                 <p class="sample-note mt-2">Demonstration product. This is not for sale.</p>
-                @if ($product->averageRating())
-                    <p class="stars mt-3" aria-label="Rating {{ $product->averageRating() }}">{{ str_repeat('★', (int) round($product->averageRating())) }} <span class="text-body">{{ $product->averageRating() }}</span></p>
+                @php
+                    $rating = $product->averageRating();
+                    $reviewsCount = $product->approvedReviewsCount();
+                @endphp
+                @if ($rating)
+                    <p class="product-rating mt-3" aria-label="Rated {{ $rating }} out of 5 from {{ $reviewsCount }} {{ \Illuminate\Support\Str::plural('review', $reviewsCount) }}">
+                        <span class="stars" aria-hidden="true">{{ str_repeat('★', (int) round($rating)) }}{{ str_repeat('☆', max(0, 5 - (int) round($rating))) }}</span>
+                        <strong>{{ $rating }}</strong>
+                        <span class="text-body">{{ $reviewsCount }} {{ \Illuminate\Support\Str::plural('review', $reviewsCount) }}</span>
+                    </p>
+                @else
+                    <p class="product-rating product-rating--empty mt-3">No ratings yet</p>
                 @endif
-                <form action="{{ route('store.cart.add', $store->slug) }}" method="post" class="mt-4">
+                <form action="{{ route('store.cart.add', $store->slug) }}" method="post" class="mt-4 js-add-to-cart">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
                     <input type="hidden" name="variant_id" value="{{ optional($product->variants->first())->id }}">

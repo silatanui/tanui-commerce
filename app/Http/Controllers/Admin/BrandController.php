@@ -20,8 +20,7 @@ class BrandController extends Controller
             ->withCount('products')
             ->when($search !== '', fn ($query) => $query->where('name', 'like', "%{$search}%"))
             ->orderBy('name')
-            ->paginate(20)
-            ->withQueryString();
+            ->get();
 
         return view('admin.brands.index', compact('brands', 'search'));
     }

@@ -1,7 +1,11 @@
 <?php
 
 use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\Admin\AssistantController;
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\BlogPostController;
+use App\Http\Controllers\Admin\FormAssistController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CouponController;
@@ -65,10 +69,29 @@ Route::prefix('admin')->group(function () {
         Route::put('/coupons/{coupon}', [CouponController::class, 'update'])->name('admin.coupons.update');
         Route::delete('/coupons/{coupon}', [CouponController::class, 'destroy'])->name('admin.coupons.destroy');
 
+        Route::get('/posts', [BlogPostController::class, 'index'])->name('admin.posts.index');
+        Route::get('/posts/create', [BlogPostController::class, 'create'])->name('admin.posts.create');
+        Route::post('/posts', [BlogPostController::class, 'store'])->name('admin.posts.store');
+        Route::get('/posts/{post}/edit', [BlogPostController::class, 'edit'])->name('admin.posts.edit');
+        Route::put('/posts/{post}', [BlogPostController::class, 'update'])->name('admin.posts.update');
+        Route::delete('/posts/{post}', [BlogPostController::class, 'destroy'])->name('admin.posts.destroy');
+
+        Route::post('/ai/suggest', [FormAssistController::class, 'suggest'])
+            ->middleware('throttle:ai-chat')
+            ->name('admin.ai.suggest');
+
         Route::get('/reviews', [ReviewController::class, 'index'])->name('admin.reviews.index');
         Route::patch('/reviews/{review}', [ReviewController::class, 'update'])->name('admin.reviews.update');
 
         Route::get('/analytics', [AnalyticsController::class, 'index'])->name('admin.analytics');
+        Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports');
+        Route::post('/reports/download', [ReportController::class, 'download'])
+            ->middleware('throttle:20,1')
+            ->name('admin.reports.download');
+        Route::get('/assistant', [AssistantController::class, 'index'])->name('admin.assistant');
+        Route::post('/assistant/chat', [AssistantController::class, 'chat'])
+            ->middleware('throttle:ai-chat')
+            ->name('admin.assistant.chat');
         Route::get('/settings', [SettingController::class, 'edit'])->name('admin.settings');
         Route::put('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
         Route::post('/settings/banners', [SettingController::class, 'storeBanner'])->name('admin.banners.store');

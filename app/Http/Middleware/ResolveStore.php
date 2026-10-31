@@ -31,7 +31,12 @@ class ResolveStore
             ->where('store_id', $store->id)
             ->whereNull('parent_id')
             ->where('status', 'active')
-            ->with(['children' => fn ($query) => $query->where('status', 'active')])
+            ->with([
+                'children' => fn ($query) => $query
+                    ->where('status', 'active')
+                    ->with('coverProduct.images'),
+                'coverProduct.images',
+            ])
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get());

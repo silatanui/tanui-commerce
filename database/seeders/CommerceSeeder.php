@@ -25,8 +25,21 @@ class CommerceSeeder extends Seeder
                 continue;
             }
 
-            $this->review($products[0], $amina, 5, 'A clear product page and the sample variations were easy to follow.');
-            $this->review($products[1], $david, 4, 'Useful demonstration of specifications, price and stock. Nothing here is a real purchase.');
+            $comments = [
+                [5, 'A clear product page and the sample variations were easy to follow.'],
+                [4, 'Useful demonstration of specifications, price and stock. Nothing here is a real purchase.'],
+                [5, 'Strong sample photography and sizing notes for a portfolio walkthrough.'],
+                [3, 'Fine for demonstration purposes — remember these prices are fictional.'],
+                [4, 'Cart and checkout flows felt complete even without a live payment gateway.'],
+                [5, 'Nice catalogue detail; the rating helps the storefront feel production-ready.'],
+            ];
+
+            foreach ($products as $index => $product) {
+                $aminaReview = $comments[$index % count($comments)];
+                $davidReview = $comments[($index + 2) % count($comments)];
+                $this->review($product, $amina, $aminaReview[0], $aminaReview[1]);
+                $this->review($product, $david, max(3, $davidReview[0] - 1), $davidReview[1]);
+            }
 
             foreach ([[$amina, 2, 1], [$david, 6, 1], [null, 10, 2]] as $index => [$customer, $days, $quantity]) {
                 $product = $products[$index % $products->count()];

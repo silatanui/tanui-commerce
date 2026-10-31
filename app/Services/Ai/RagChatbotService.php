@@ -234,12 +234,50 @@ class RagChatbotService
             ->all();
     }
 
+    /** @return array<string,mixed> */
+    public function sessionContext(Store $store, string $sessionToken): array
+    {
+        $session = AiChatSession::query()
+            ->where('store_id', $store->id)
+            ->where('session_token', $sessionToken)
+            ->first();
+
+        return is_array($session?->context) ? $session->context : [];
+    }
+
     private function isBrowseIntent(string $sanitized): bool
     {
         return (bool) preg_match(
-            '/\b(what do you sell|what.*sell|catalogue|catalog|products?|recommend|show me|browse|available|collection|best seller|bestsellers?)\b/i',
+            '/\b(what do you sell|what.*sell|catalogue|catalog|products?|recommend|show me|browse|available|collection|best seller|bestsellers?|find a product)\b/i',
             $sanitized
         );
+    }
+
+    /**
+     * Detect commerce UI intents that should skip RAG and open in-panel widgets.
+     */
+    public function detectCommerceIntent(string $rawMessage): ?string
+    {
+        $q = mb_strtolower(trim($rawMessage));
+
+        if ($q === '') {
+            return null;
+        }
+
+        if (preg_match('/\b(track( my)? order|where is my order|delivery status|order status)\b/i', $q)
+            || preg_match('/\bTC-[A-Z0-9]+-\d{2}-\d+\b/i', $rawMessage)) {
+            return 'track';
+        }
+
+        if (preg_match('/\b(check\s*out|checkout|place order|buy now|complete (my )?purchase|pay(ment)?)\b/i', $q)) {
+            return 'checkout';
+        }
+
+        if (preg_match('/\b(view cart|show cart|my cart|shopping cart|what.?s in my cart)\b/i', $q)) {
+            return 'cart';
+        }
+
+        return null;
     }
 
     private function resolveSession(Store $store, ?string $sessionToken, ?int $userId, ?string $ip): AiChatSession
@@ -363,6 +401,10 @@ class RagChatbotService
             'answer' => $answer,
             'sources' => $sources,
             'products' => $products,
+            'ui' => [
+                'step' => $products !== [] ? 'product' : 'browse',
+                'products' => $products,
+            ],
             'latency_ms' => $latency,
             'driver' => $this->vectors->driverName(),
             'session_token' => $session->session_token,
@@ -377,6 +419,10 @@ class RagChatbotService
             'answer' => $answer,
             'sources' => $sources,
             'products' => $products,
+            'ui' => [
+                'step' => $products !== [] ? 'product' : 'browse',
+                'products' => $products,
+            ],
             'latency_ms' => $latency,
             'driver' => config('ai.vector.driver'),
             'session_token' => null,

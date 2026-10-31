@@ -1,11 +1,35 @@
 @extends('layouts.admin')
+@section('title', 'Customers')
 @section('content')
-<h1 class="h3">Customers</h1>
-<form class="mb-3"><input class="form-control" name="q" value="{{ $search }}" placeholder="Search customers"></form>
-<table class="table"><thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Orders in this store</th></tr></thead><tbody>
-@foreach ($customers as $customer)
-<tr><td><a href="{{ route('admin.customers.show', $customer) }}">{{ $customer->name }}</a></td><td>{{ $customer->email }}</td><td>{{ $customer->status }}</td><td>{{ $customer->orders_count }}</td></tr>
-@endforeach
-</tbody></table>
-{{ $customers->links() }}
+<div class="page-head">
+    <h1>Customers</h1>
+</div>
+<div class="admin-table-wrap">
+    <table class="table table-hover admin-datatable table-sm align-middle">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Orders in this store</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($customers as $customer)
+                <tr>
+                    <td><strong>{{ $customer->name }}</strong></td>
+                    <td>{{ $customer->email }}</td>
+                    <td><span class="status-pill is-{{ $customer->status }}">{{ $customer->status }}</span></td>
+                    <td>{{ $customer->orders_count }}</td>
+                    <td class="text-end">
+                        <div class="table-actions">
+                            <a class="btn-table btn-table-primary" href="{{ route('admin.customers.show', $customer) }}">View</a>
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
 @endsection

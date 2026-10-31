@@ -28,8 +28,7 @@ class OrderController extends Controller
             })
             ->when($status !== '', fn ($query) => $query->where('status', $status))
             ->latest()
-            ->paginate(15)
-            ->withQueryString();
+            ->get();
 
         return view('admin.orders.index', [
             'orders' => $orders,

@@ -11,7 +11,7 @@ class CouponController extends Controller
 {
     public function index()
     {
-        $coupons = Coupon::query()->where('store_id', admin_store()->id)->latest()->paginate(15);
+        $coupons = Coupon::query()->where('store_id', admin_store()->id)->latest()->get();
 
         return view('admin.coupons.index', compact('coupons'));
     }

@@ -15,8 +15,11 @@
             <div class="col-6 col-lg-2">
                 <div class="footer-label">Explore</div>
                 <a class="d-block py-1" href="{{ route('store.shop', $store->slug) }}">Shop</a>
+                <a class="d-block py-1" href="{{ route('store.blog', $store->slug) }}">News</a>
                 <a class="d-block py-1" href="{{ route('store.compare', $store->slug) }}">Compare</a>
-                <a class="d-block py-1" href="{{ route('store.coming-soon', [$store->slug, 'faq']) }}">Help</a>
+                <a class="d-block py-1" href="{{ route('store.faq', $store->slug) }}">Help &amp; FAQ</a>
+                <a class="d-block py-1" href="{{ route('store.shipping', $store->slug) }}">Shipping</a>
+                <a class="d-block py-1" href="{{ route('store.returns', $store->slug) }}">Returns</a>
                 <a class="d-block py-1" href="{{ route('contact') }}">Contact</a>
             </div>
             <div class="col-lg-4">

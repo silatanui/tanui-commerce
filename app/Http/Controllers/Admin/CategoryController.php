@@ -22,8 +22,7 @@ class CategoryController extends Controller
             ->when($search !== '', fn ($query) => $query->where('name', 'like', "%{$search}%"))
             ->orderBy('sort_order')
             ->orderBy('name')
-            ->paginate(20)
-            ->withQueryString();
+            ->get();
 
         return view('admin.categories.index', compact('categories', 'search'));
     }

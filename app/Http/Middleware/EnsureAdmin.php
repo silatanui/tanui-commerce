@@ -4,8 +4,10 @@ namespace App\Http\Middleware;
 
 use App\Models\ProductReview;
 use App\Models\Store;
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureAdmin
@@ -14,8 +16,20 @@ class EnsureAdmin
     {
         $user = $request->user();
 
+        // Portfolio demo: guests enter the admin area without a login form.
         if (! $user) {
-            return redirect()->guest(route('admin.login'));
+            $admin = User::query()
+                ->where('role', 'admin')
+                ->where('status', 'active')
+                ->orderBy('id')
+                ->first();
+
+            if (! $admin) {
+                abort(503, 'No demonstration administrator is available. Seed the database first.');
+            }
+
+            Auth::login($admin);
+            $user = $admin;
         }
 
         if (! $user->isAdmin() || ! $user->isActive()) {

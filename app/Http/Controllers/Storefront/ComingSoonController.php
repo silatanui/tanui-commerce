@@ -82,9 +82,29 @@ class ComingSoonController extends Controller
         ],
     ];
 
-    public function show(string $store, string $feature): View|Response
+    public function show(string $store, string $feature): View|Response|\Illuminate\Http\RedirectResponse
     {
         $feature = strtolower($feature);
+
+        if ($feature === 'new-arrivals') {
+            return redirect()->route('store.arrivals', $store);
+        }
+
+        if ($feature === 'sale') {
+            return redirect()->route('store.deals', $store);
+        }
+
+        if ($feature === 'products') {
+            return redirect()->route('store.bestsellers', $store);
+        }
+
+        if ($feature === 'lookbook') {
+            return redirect()->route('store.lookbook', $store);
+        }
+
+        if ($feature === 'gift-cards') {
+            return redirect()->route('store.gift-cards', $store);
+        }
 
         if (! isset(self::FEATURES[$feature])) {
             abort(404);
