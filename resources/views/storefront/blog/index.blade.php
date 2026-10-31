@@ -12,8 +12,8 @@
         @forelse ($posts as $post)
             <div class="col-md-6 col-lg-4">
                 <article class="h-100 border" style="border-color:rgba(0,0,0,.08)!important">
-                    <a href="{{ route('store.blog.show', [$store->slug, $post->slug]) }}" class="d-block">
-                        <img src="{{ $post->coverUrl() }}" alt="" style="width:100%;height:190px;object-fit:cover">
+                    <a href="{{ route('store.blog.show', [$store->slug, $post->slug]) }}" class="d-block blog-card__media">
+                        <img src="{{ $post->coverUrl() }}" alt="" loading="lazy" decoding="async" data-skel>
                     </a>
                     <div class="p-3">
                         <p class="small mb-2" style="opacity:.65">{{ optional($post->published_at)->format('d M Y') }}</p>

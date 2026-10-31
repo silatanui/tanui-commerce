@@ -16,6 +16,92 @@ document.addEventListener('DOMContentLoaded', () => {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;');
 
+  /* ——— Image skeletons ——— */
+  const SKEL_IMG_SEL = [
+    '.pcard__media > img',
+    '.wishlist-card__media > img',
+    '.category-tile__media > img',
+    '.lookbook-tile > img',
+    '.promo-stack__media > img',
+    '.promo-wide__media > img',
+    '.bestsellers-hero__feature > img',
+    '.deals-hero__feature > img',
+    '.arrivals-hero__feature > img',
+    '.gallery__stage > img',
+    '.gallery .thumb > img',
+    '.blog-card__media > img',
+    '.cart-drawer__thumb > img',
+    'img[data-skel]',
+  ].join(',');
+
+  const skelHostFor = (img) => {
+    const host = img.closest(
+      '.pcard__media, .wishlist-card__media, .category-tile__media, .lookbook-tile, .promo-stack__media, .promo-wide__media, .bestsellers-hero__feature, .deals-hero__feature, .arrivals-hero__feature, .gallery__stage, .gallery .thumb, .blog-card__media, .cart-drawer__thumb'
+    );
+    if (host) return host;
+    if (img.parentElement && img.parentElement.tagName !== 'BODY') return img.parentElement;
+    return null;
+  };
+
+  const skelReveal = (img, host, ok = true) => {
+    host.classList.remove('is-loading');
+    host.classList.toggle('is-loaded', ok);
+    host.classList.toggle('is-error', !ok);
+    img.removeAttribute('aria-busy');
+  };
+
+  const skelArm = (img, { force = false } = {}) => {
+    if (!(img instanceof HTMLImageElement)) return;
+    const host = skelHostFor(img);
+    if (!host) return;
+
+    img.setAttribute('data-skel-img', '');
+    host.classList.add('is-skel', 'is-loading');
+    host.classList.remove('is-loaded', 'is-error');
+    img.setAttribute('aria-busy', 'true');
+
+    if (!force && img.complete && img.naturalWidth > 0) {
+      skelReveal(img, host, true);
+      return;
+    }
+
+    if (!force && img.complete && img.naturalWidth === 0 && img.src) {
+      skelReveal(img, host, false);
+      return;
+    }
+
+    const onLoad = () => skelReveal(img, host, true);
+    const onError = () => skelReveal(img, host, false);
+    img.addEventListener('load', onLoad, { once: true });
+    img.addEventListener('error', onError, { once: true });
+  };
+
+  const initImageSkeletons = (root = document) => {
+    root.querySelectorAll(SKEL_IMG_SEL).forEach((img) => {
+      if (img.dataset.skelBound === '1') return;
+      img.dataset.skelBound = '1';
+      if (!img.hasAttribute('decoding')) img.setAttribute('decoding', 'async');
+      skelArm(img);
+    });
+  };
+
+  const swapSkelSrc = (img, src) => {
+    if (!img || !src || img.src === src) return;
+    img.dataset.skelBound = '1';
+    skelArm(img, { force: true });
+    img.src = src;
+  };
+
+  initImageSkeletons();
+
+  document.querySelectorAll('[data-gallery-thumb]').forEach((thumb) => {
+    thumb.addEventListener('click', () => {
+      const source = thumb.matches('img') ? thumb : thumb.querySelector('img');
+      const target = document.getElementById(thumb.dataset.galleryThumb || 'primary-image');
+      if (target && source) swapSkelSrc(target, source.currentSrc || source.src);
+    });
+  });
+
   const jsonHeaders = (method = 'GET') => {
     const headers = {
       Accept: 'application/json',
@@ -71,7 +157,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     drawerBody.innerHTML = lines.map((line) => `
       <article class="cart-drawer__line" data-item-id="${line.item_id}">
-        <img src="${escapeHtml(line.image || '')}" alt="" loading="lazy">
+        <span class="cart-drawer__thumb is-skel is-loading">
+          <img src="${escapeHtml(line.image || '')}" alt="" loading="lazy" decoding="async">
+        </span>
         <div class="cart-drawer__line-body">
           <a href="${escapeHtml(line.url || '#')}">${escapeHtml(line.name)}</a>
           <div class="cart-drawer__line-meta">
@@ -90,6 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (drawerSubtotal) drawerSubtotal.textContent = payload.subtotal_label || '—';
     if (drawerFoot) drawerFoot.hidden = false;
     if (window.lucide) window.lucide.createIcons();
+    initImageSkeletons(drawerBody);
   };
 
   const fetchCart = async () => {

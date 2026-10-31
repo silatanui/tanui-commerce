@@ -16,10 +16,14 @@
     <div class="container">
         <div class="row g-5">
             <div class="col-lg-6 gallery">
-                <img id="primary-image" src="{{ $product->primaryImageUrl() }}" alt="{{ $product->name }}">
-                <div class="d-flex gap-2 mt-3">
+                <div class="gallery__stage">
+                    <img id="primary-image" src="{{ $product->primaryImageUrl() }}" alt="{{ $product->name }}" decoding="async" data-skel>
+                </div>
+                <div class="d-flex gap-2 mt-3 gallery__thumbs">
                     @foreach ($product->images as $image)
-                        <img class="thumb" src="{{ $image->url() }}" alt="{{ $image->alt_text }}" onclick="document.getElementById('primary-image').src=this.src">
+                        <button type="button" class="thumb" data-gallery-thumb="primary-image" aria-label="View image">
+                            <img src="{{ $image->url() }}" alt="{{ $image->alt_text }}" loading="lazy" decoding="async" data-skel>
+                        </button>
                     @endforeach
                 </div>
             </div>

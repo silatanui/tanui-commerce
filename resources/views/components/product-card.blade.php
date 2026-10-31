@@ -5,7 +5,7 @@
 @endphp
 <article class="pcard">
     <a class="pcard__media" href="{{ route('store.product', [$store->slug, $product->slug]) }}">
-        <img src="{{ $product->primaryImageUrl() }}" alt="{{ $product->name }}">
+        <img src="{{ $product->primaryImageUrl() }}" alt="{{ $product->name }}" loading="lazy" decoding="async" data-skel>
         @if ($badge = $product->badge())
             <span class="pcard__badge">{{ $badge }}</span>
         @endif

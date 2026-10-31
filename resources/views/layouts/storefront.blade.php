@@ -13,8 +13,8 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|outfit:500,600,700,800" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{{ asset('css/storefront.css') }}?v=20261031y" rel="stylesheet">
-    <link href="{{ asset('css/themes/'.$store->slug.'.css') }}?v=20261031y" rel="stylesheet">
+    <link href="{{ asset('css/storefront.css') }}?v=20261031skel" rel="stylesheet">
+    <link href="{{ asset('css/themes/'.$store->slug.'.css') }}?v=20261031skel" rel="stylesheet">
     <style>
         [data-theme="{{ $store->slug }}"] { --accent: {{ $accent }}; --ink-strong: {{ $secondary }}; }
     </style>
@@ -35,8 +35,8 @@
     @include('storefront.partials.ai-chat')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
-    <script src="{{ asset('js/storefront.js') }}?v=20261031p"></script>
-    <script src="{{ asset('js/ai-chat.js') }}?v=20261031p"></script>
+    <script src="{{ asset('js/storefront.js') }}?v=20261031skel"></script>
+    <script src="{{ asset('js/ai-chat.js') }}?v=20261031skel"></script>
     @stack('scripts')
 </body>
 </html>

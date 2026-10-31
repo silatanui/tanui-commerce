@@ -17,4 +17,22 @@ require __DIR__.'/../vendor/autoload.php';
 /** @var Application $app */
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
-$app->handleRequest(Request::capture());
+$request = Request::capture();
+
+// Subdirectory installs (e.g. /commerce): route:cache breaks matching "/" because
+// REQUEST_URI /commerce/ is trimmed to /commerce and pathInfo becomes "/commerce".
+// Appending index.php keeps Symfony's base URL detection correct.
+$scriptDir = rtrim(str_replace('\\', '/', dirname($request->server->get('SCRIPT_NAME', ''))), '/');
+if ($scriptDir !== '' && $scriptDir !== '/') {
+    $parts = explode('?', (string) $request->server->get('REQUEST_URI'), 2);
+    $uriPath = $parts[0];
+
+    if ($uriPath === $scriptDir || $uriPath === $scriptDir.'/') {
+        $request->server->set(
+            'REQUEST_URI',
+            $scriptDir.'/index.php'.(isset($parts[1]) ? '?'.$parts[1] : '')
+        );
+    }
+}
+
+$app->handleRequest($request);

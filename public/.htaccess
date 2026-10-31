@@ -4,7 +4,10 @@
     </IfModule>
 
     RewriteEngine On
-    RewriteBase /Tanui_commerce/public/
+
+    # Uncomment the line that matches how the app is served:
+    # RewriteBase /Tanui_commerce/public/
+    # RewriteBase /commerce/
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
