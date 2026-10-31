@@ -1,0 +1,16 @@
+/* Tanui Electronics theme — Outfit brand + Manrope UI */
+[data-theme="electronics"] {
+  --bg: #f3f5f7;
+  --surface: #ffffff;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --accent: #087ea4;
+  --hero: #0b1c2c;
+  --hero-ink: #f8fafc;
+  --brand: "Outfit", sans-serif;
+  --display: "Outfit", sans-serif;
+  --sans: "Manrope", sans-serif;
+}
+[data-theme="electronics"] .pcard__media img { aspect-ratio: 1/1; background: #eef3f6; }
+[data-theme="electronics"] .spec-table { font-variant-numeric: tabular-nums; }

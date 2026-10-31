@@ -1,0 +1,14 @@
+[data-theme="home"] {
+  --bg: #f5f1ea;
+  --surface: #ffffff;
+  --ink: #1f1b17;
+  --muted: #73685c;
+  --line: #e7ddd0;
+  --accent: #8d6a45;
+  --hero: #2c2825;
+  --hero-ink: #f5f1ea;
+  --brand: "Outfit", sans-serif;
+  --display: "Outfit", sans-serif;
+  --sans: "Manrope", sans-serif;
+}
+[data-theme="home"] .pcard__media img { aspect-ratio: 5/4; }

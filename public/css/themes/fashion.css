@@ -1,0 +1,33 @@
+/* Tanui Fashion — sharp architectural storefront (thesis design language) */
+[data-theme="fashion"] {
+  --bg: #f7f5f2;
+  --surface: #ffffff;
+  --ink: #121212;
+  --muted: #6b7280;
+  --line: #e4dfd8;
+  --accent: #8e2f2f;
+  --hero: #111111;
+  --hero-ink: #f7f5f2;
+  --brand: "Outfit", sans-serif;
+  --display: "Outfit", sans-serif;
+  --sans: "Manrope", sans-serif;
+}
+[data-theme="fashion"] .pcard__media img { aspect-ratio: 3/4; }
+[data-theme="fashion"] .wordmark {
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  letter-spacing: -.03em;
+}
+[data-theme="fashion"] .hero-store h1,
+[data-theme="fashion"] .section-head h2,
+[data-theme="fashion"] .category-tile strong {
+  font-family: "Outfit", sans-serif;
+}
+[data-theme="fashion"] .categories-btn {
+  background: var(--ink);
+  color: #fff;
+}
+[data-theme="fashion"] .categories-btn:hover {
+  background: #000;
+  color: #fff;
+}

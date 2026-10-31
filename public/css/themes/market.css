@@ -1,0 +1,14 @@
+[data-theme="market"] {
+  --bg: #f3f6f2;
+  --surface: #ffffff;
+  --ink: #15231b;
+  --muted: #5f6f64;
+  --line: #dce6db;
+  --accent: #2f7d46;
+  --hero: #1c2b22;
+  --hero-ink: #f3f6f2;
+  --brand: "Outfit", sans-serif;
+  --display: "Outfit", sans-serif;
+  --sans: "Manrope", sans-serif;
+}
+[data-theme="market"] .pcard__media img { aspect-ratio: 1/1; }

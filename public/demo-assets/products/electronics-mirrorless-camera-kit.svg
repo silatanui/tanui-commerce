@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1120" viewBox="0 0 900 1120" role="img" aria-label="Mirrorless Camera Kit">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e7eef3"/>
+      <stop offset="1" stop-color="#c9d7e2"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="1120" fill="url(#bg)"/>
+  <circle cx="174" cy="214" r="164" fill="#087ea4" opacity="0.18"/>
+  <rect x="620" y="860" width="180" height="140" rx="8" fill="#101820" opacity="0.08"/>
+  <text x="72" y="92" fill="#087ea4" font-family="Arial, sans-serif" font-size="18" letter-spacing="3">ELECTRONICS</text>
+  <text x="72" y="620" fill="#101820" font-family="Georgia, serif" font-size="46" font-weight="600">Mirrorless</text><text x="72" y="678" fill="#101820" font-family="Georgia, serif" font-size="46" font-weight="600">Camera Kit</text>
+  <text x="72" y="1048" fill="#101820" opacity="0.55" font-family="Arial, sans-serif" font-size="16">SAMPLE PRODUCT · TANUI COMMERCE</text>
+</svg>
